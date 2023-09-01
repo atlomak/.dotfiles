@@ -23,10 +23,11 @@ set sw=4
 
 set signcolumn=yes
 
-vnoremap ; :call Get_visual_selection()<cr>
 
 "Func by xolox/stackoverflow
 "Replace word under selected region
+vnoremap <leader>r :call Get_visual_selection()<cr>
+
 function! Get_visual_selection()
   let [lnum1, col1] = getpos("'<")[1:2]
   let [lnum2, col2] = getpos("'>")[1:2]
@@ -53,6 +54,8 @@ Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
 Plug 'morhetz/gruvbox'
 Plug 'vim-test/vim-test'
+Plug 'Yggdroot/indentLine'
+Plug 'hashivim/vim-terraform'
 call plug#end()
 
 set background=dark
@@ -104,10 +107,6 @@ let g:airline#extensions#tabline#enabled = 1
 
 "Nerdtree
 
-" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-
 nnoremap <leader>e :NERDTreeFind<CR>
 
 "TRUECOLORS
@@ -127,3 +126,6 @@ endif
 "Vimtest
 nmap <silent> <leader>T :TestFile<CR>
 nmap <silent> <leader>t :TestNearest<CR>
+
+"IndentLine guides
+let g:indentLine_enabled = 1
