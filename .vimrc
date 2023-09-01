@@ -23,6 +23,7 @@ set sw=4
 
 set signcolumn=yes
 
+set hidden
 
 "Func by xolox/stackoverflow
 "Replace word under selected region
@@ -52,10 +53,14 @@ Plug 'tpope/vim-vinegar'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
-Plug 'morhetz/gruvbox'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'vim-test/vim-test'
 Plug 'Yggdroot/indentLine'
 Plug 'hashivim/vim-terraform'
+Plug 'moll/vim-bbye'
+
+"Colorthemes
+Plug 'morhetz/gruvbox'
 call plug#end()
 
 set background=dark
@@ -78,8 +83,6 @@ function! ShowDocumentation()
   endif
 endfunction
 
-inoremap <silent><expr> <Tab> coc#pum#visible() ? coc#pum#confirm()
-                              \: "<Tab>"
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -90,6 +93,8 @@ autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
 autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
 autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
 autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
+autocmd User CocNvimInit nmap <silent> <leader>d <Plug>(coc-dia)
+autocmd User CocNvimInit nmap <silent><nowait> <space>q  :<C-u>CocList diagnostics<cr>
 
 if has('nvim-0.4.0') || has('patch-8.2.0750')
   nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
@@ -102,14 +107,35 @@ endif
 
 command! -nargs=0 Format :call CocActionAsync('format')
 
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
 "Airline
 let g:airline#extensions#tabline#enabled = 1
 
-"Nerdtree
+" Nerdtree
 
 nnoremap <leader>e :NERDTreeFind<CR>
 
-"TRUECOLORS
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+"Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+" TRUECOLORS
 if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
   if (has("nvim"))
     "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
