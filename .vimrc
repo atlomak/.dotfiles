@@ -1,5 +1,4 @@
 set nocompatible
-
 nnoremap <SPACE> <Nop>
 let mapleader = " "
 
@@ -25,6 +24,9 @@ set signcolumn=yes
 
 set hidden
 
+set ignorecase
+set smartcase
+
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
@@ -40,12 +42,27 @@ function! Get_visual_selection()
   execute ":%s/".selection."/".change."/gc"
 endfunction
 
+" TRUECOLORS
+if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
+
 "Install Plug
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
   silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
 
 "git config --global core.autocrlf false -> ubuntu
 call plug#begin()
@@ -58,13 +75,15 @@ Plug 'vim-test/vim-test'
 Plug 'Yggdroot/indentLine'
 Plug 'hashivim/vim-terraform'
 Plug 'moll/vim-bbye'
-
+Plug 'junegunn/goyo.vim'
+Plug 'tpope/vim-fugitive'
 "Colorthemes
-Plug 'morhetz/gruvbox'
+Plug 'rafi/awesome-vim-colorschemes'
 call plug#end()
 
+autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
 set background=dark
-silent! colorscheme gruvbox
+colorscheme gruvbox
 
 "Buffers
 nmap <silent> <tab> :bn<CR>
@@ -72,7 +91,10 @@ nmap <silent> <s-tab> :bp<CR>
 
 
 "COC config
+
 let g:coc_disable_startup_warning=1
+
+
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
 function! ShowDocumentation()
@@ -93,8 +115,8 @@ autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
 autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
 autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
 autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
-autocmd User CocNvimInit nmap <silent> <leader>d <Plug>(coc-dia)
-autocmd User CocNvimInit nmap <silent><nowait> <space>q  :<C-u>CocList diagnostics<cr>
+autocmd User CocNvimInit nmap <silent> <leader>rn <Plug>(coc-rename)
+autocmd User CocNvimInit nmap <silent><nowait> <space>d  :CocDiagnostics<CR>
 
 if has('nvim-0.4.0') || has('patch-8.2.0750')
   nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
@@ -123,7 +145,7 @@ let g:airline#extensions#tabline#enabled = 1
 
 " Nerdtree
 
-nnoremap <leader>e :NERDTreeFind<CR>
+nnoremap <leader>e :NERDTreeFocus<CR>
 
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -135,19 +157,6 @@ autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTa
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
-" TRUECOLORS
-if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
-  if (has("nvim"))
-    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-  endif
-  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
-  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
-  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-  if (has("termguicolors"))
-    set termguicolors
-  endif
-endif
 
 "Vimtest
 nmap <silent> <leader>T :TestFile<CR>
@@ -155,3 +164,14 @@ nmap <silent> <leader>t :TestNearest<CR>
 
 "IndentLine guides
 let g:indentLine_enabled = 1
+
+
+"GoYo
+
+function! s:goyo_enter()
+  :NERDTreeClose
+  set noshowmode
+  set noshowcmd
+  set scrolloff=999
+endfunction
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
