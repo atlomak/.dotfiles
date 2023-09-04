@@ -28,7 +28,7 @@ set ignorecase
 set smartcase
 
 set mouse=a
-
+set encoding=UTF-8
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
@@ -73,6 +73,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
 Plug 'vim-test/vim-test'
 Plug 'Yggdroot/indentLine'
 Plug 'hashivim/vim-terraform'
@@ -80,18 +81,22 @@ Plug 'moll/vim-bbye'
 Plug 'junegunn/goyo.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'puremourning/vimspector'
+Plug 'sheerun/vim-polyglot'
+Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 "Colorthemes
 Plug 'rafi/awesome-vim-colorschemes'
 call plug#end()
 
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
 set background=dark
-colorscheme gruvbox
+colorscheme onedark
 
 "Buffers
 nmap <silent> <tab> :bn<CR>
 nmap <silent> <s-tab> :bp<CR>
-
+nnoremap <Leader>q :Bdelete<CR>
 
 "COC config
 
@@ -119,7 +124,22 @@ autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
 autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
 autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
 autocmd User CocNvimInit nmap <silent> <leader>rn <Plug>(coc-rename)
-autocmd User CocNvimInit nmap <silent><nowait> <space>d  :CocDiagnostics<CR>
+
+autocmd User CocNvimInit nmap <silent> <leader>D :<C-u>CocList diagnostics<cr>
+autocmd User CocNvimInit nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
+
+autocmd BufReadPost quickfix nnoremap <silent><buffer> <leader>d :q<CR>
+
+autocmd User CocNvimInit nmap <leader>c  <Plug>(coc-codeaction-cursor)
+
+autocmd User CocNvimInit xmap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit omap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit xmap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit omap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit xmap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit omap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit xmap ac <Plug>(coc-classobj-a)
+autocmd User CocNvimInit omap ac <Plug>(coc-classobj-a)
 
 if has('nvim-0.4.0') || has('patch-8.2.0750')
   nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
@@ -148,7 +168,8 @@ let g:airline#extensions#tabline#enabled = 1
 
 " Nerdtree
 
-nnoremap <leader>e :NERDTreeFocus<CR>
+nmap <Leader>fe :NERDTreeFind<cr>R
+nmap <Leader>e :NERDTreeFocus<cr>R
 
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -162,6 +183,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 
 
 "Vimtest
+nmap <silent> <leader>ts :TestSuite<CR>
 nmap <silent> <leader>T :TestFile<CR>
 nmap <silent> <leader>t :TestNearest<CR>
 
@@ -179,7 +201,16 @@ function! s:goyo_enter()
 endfunction
 autocmd! User GoyoEnter nested call <SID>goyo_enter()
 
+" Airlien
+let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 " Vimspector
 let g:vimspector_enable_mappings = 'HUMAN'
 nmap <F1> :CocCommand java.debug.vimspector.start<CR>
+
+" Fzf
+nmap <silent> <leader>ff :RG<cr>
+nmap <silent> <leader>fg :GFiles<cr>
+nmap <silent> <leader>fd :Files<cr>
+nmap <silent> <leader>fb :Buffers<cr>
+nmap <silent> <leader><leader> :BLines<cr>
