@@ -1,0 +1,158 @@
+source ~/dotfiles/.vimrc
+
+"Install Plug
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+
+"git config --global core.autocrlf false -> ubuntu
+call plug#begin()
+Plug 'tpope/vim-vinegar'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'vim-airline/vim-airline'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-test/vim-test'
+Plug 'Yggdroot/indentLine'
+Plug 'hashivim/vim-terraform'
+Plug 'moll/vim-bbye'
+Plug 'junegunn/goyo.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'puremourning/vimspector'
+Plug 'sheerun/vim-polyglot'
+Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+"Colorthemes
+Plug 'rafi/awesome-vim-colorschemes'
+call plug#end()
+
+autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
+set background=dark
+colorscheme onedark
+
+"Buffers
+nmap <silent> <tab> :bn<CR>
+nmap <silent> <s-tab> :bp<CR>
+nnoremap <Leader>q :Bdelete<CR>
+
+"COC config
+
+let g:coc_disable_startup_warning=1
+
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
+autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
+autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
+autocmd User CocNvimInit nmap <silent> <leader>rn <Plug>(coc-rename)
+
+autocmd User CocNvimInit nmap <silent> <leader>D :<C-u>CocList diagnostics<cr>
+autocmd User CocNvimInit nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
+
+autocmd BufReadPost quickfix nnoremap <silent><buffer> <leader>d :q<CR>
+
+autocmd User CocNvimInit nmap <leader>c  <Plug>(coc-codeaction-cursor)
+
+autocmd User CocNvimInit xmap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit omap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit xmap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit omap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit xmap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit omap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit xmap ac <Plug>(coc-classobj-a)
+autocmd User CocNvimInit omap ac <Plug>(coc-classobj-a)
+
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+command! -nargs=0 Format :call CocActionAsync('format')
+
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+"Airline
+let g:airline#extensions#tabline#enabled = 1
+
+" Nerdtree
+
+nmap <Leader>fe :NERDTreeFind<cr>R
+nmap <Leader>e :NERDTreeFocus<cr>R
+
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+"Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+
+"Vimtest
+nmap <silent> <leader>ts :TestSuite<CR>
+nmap <silent> <leader>T :TestFile<CR>
+nmap <silent> <leader>t :TestNearest<CR>
+
+"IndentLine guides
+let g:indentLine_enabled = 1
+
+
+"GoYo
+
+function! s:goyo_enter()
+  :NERDTreeClose
+  set noshowmode
+  set noshowcmd
+  set scrolloff=999
+endfunction
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+
+" Airlien
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+" Vimspector
+let g:vimspector_enable_mappings = 'HUMAN'
+nmap <F1> :CocCommand java.debug.vimspector.start<CR>
+
+" Fzf
+nmap <silent> <leader>ff :RG<cr>
+nmap <silent> <leader>fg :GFiles<cr>
+nmap <silent> <leader>fd :Files<cr>
+nmap <silent> <leader>fb :Buffers<cr>
+nmap <silent> <leader><leader> :BLines<cr>
