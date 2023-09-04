@@ -27,6 +27,8 @@ set hidden
 set ignorecase
 set smartcase
 
+set mouse=a
+
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
@@ -77,6 +79,7 @@ Plug 'hashivim/vim-terraform'
 Plug 'moll/vim-bbye'
 Plug 'junegunn/goyo.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'puremourning/vimspector'
 "Colorthemes
 Plug 'rafi/awesome-vim-colorschemes'
 call plug#end()
@@ -175,3 +178,8 @@ function! s:goyo_enter()
   set scrolloff=999
 endfunction
 autocmd! User GoyoEnter nested call <SID>goyo_enter()
+
+
+" Vimspector
+let g:vimspector_enable_mappings = 'HUMAN'
+nmap <F1> :CocCommand java.debug.vimspector.start<CR>
