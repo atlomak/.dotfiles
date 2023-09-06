@@ -29,6 +29,11 @@ set smartcase
 
 set mouse=a
 set encoding=UTF-8
+
+set wildmenu
+
+set tabpagemax=50
+
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
