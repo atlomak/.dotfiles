@@ -49,6 +49,21 @@ function! Get_visual_selection()
   execute ":%s/".selection."/".change."/gc"
 endfunction
 
+" Set 1 to transparent background
+let g:transparent=0
+
+function! ToggleTransparent()
+  if g:transparent==0
+    hi Normal guibg=NONE
+    let g:transparent=1
+  else
+    execute("colorscheme " . g:colors_name)
+    let g:transparent = 0
+  endif
+endfunction
+
+command Transparent :call ToggleTransparent()
+
 " TRUECOLORS
 if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
   if (has("nvim"))
@@ -60,5 +75,8 @@ if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
   if (has("termguicolors"))
     set termguicolors
+    if g:transparent == 1
+      hi Normal guibg=NONE
+    endif
   endif
 endif
