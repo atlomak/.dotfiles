@@ -31,7 +31,7 @@ call plug#end()
 
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
 set background=dark
-colorscheme challenger_deep
+colorscheme onedark
 
 "Buffers
 nmap <silent> <tab> :bn<CR>
@@ -41,7 +41,7 @@ nnoremap <Leader>q :Bdelete<CR>
 "COC config
 
 let g:coc_disable_startup_warning=1
-
+let g:coc_start_at_startup = 0
 
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
