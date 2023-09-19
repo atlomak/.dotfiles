@@ -34,6 +34,8 @@ set wildmenu
 
 set tabpagemax=50
 
+set pumheight=10
+
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
@@ -80,3 +82,6 @@ if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
     endif
   endif
 endif
+
+nnoremap ;b :ls<cr>:b<space>
+xnoremap P Pgvy

@@ -21,7 +21,6 @@ Plug 'moll/vim-bbye'
 Plug 'junegunn/goyo.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'puremourning/vimspector'
-Plug 'sheerun/vim-polyglot'
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -30,6 +29,7 @@ Plug 'rafi/awesome-vim-colorschemes'
 call plug#end()
 
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
+autocmd ColorScheme * hi CocInfoLine ctermfg=Blue guifg=#89CFF0
 set background=dark
 colorscheme onedark
 
@@ -63,14 +63,15 @@ autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
 autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
 autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
 autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
-autocmd User CocNvimInit nmap <silent> <leader>rn <Plug>(coc-rename)
+nmap <silent> <leader>rn <Plug>(coc-rename)
 
-autocmd User CocNvimInit nmap <silent> <leader>D :<C-u>CocList diagnostics<cr>
-autocmd User CocNvimInit nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
+nmap <silent> <leader>D :<C-u>CocList diagnostics<cr>
+nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
 
-autocmd BufReadPost quickfix nnoremap <silent><buffer> <leader>d :q<CR>
+autocmd BufReadPost quickfix nnoremap <silent><buffer> q :q<CR>
 
-autocmd User CocNvimInit nmap <leader>c  <Plug>(coc-codeaction-cursor)
+nmap <leader>c  <Plug>(coc-codeaction-cursor)
+nmap <leader>s  <Plug>
 
 autocmd User CocNvimInit xmap if <Plug>(coc-funcobj-i)
 autocmd User CocNvimInit omap if <Plug>(coc-funcobj-i)
@@ -105,11 +106,13 @@ endfunction
 
 "Airline
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_tabs = 0
 
 " Nerdtree
 
 nmap <Leader>fe :NERDTreeFind<cr>R
 nmap <Leader>e :NERDTreeFocus<cr>R
+let g:airline#extensions#tabline#buffer_nr_show = 1
 
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -157,6 +160,7 @@ let g:airline#extensions#tabline#formatter = 'unique_tail'
 " Vimspector
 let g:vimspector_enable_mappings = 'HUMAN'
 nmap <F1> :CocCommand java.debug.vimspector.start<CR>
+
 
 " Fzf
 nmap <silent> <leader>ff :RG<cr>
