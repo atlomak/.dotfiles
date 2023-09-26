@@ -128,7 +128,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 "Vimtest
 nmap <silent> <leader>ts :TestSuite<CR>
 nmap <silent> <leader>T :TestFile<CR>
-nmap <silent> <leader>t :TestNearest<CR>
+nmap <silent> <leader>tt :TestNearest<CR>
 
 "IndentLine guides
 let g:indentLine_enabled = 1
