@@ -31,7 +31,7 @@ call plug#end()
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
 autocmd ColorScheme * hi CocInfoLine ctermfg=Blue guifg=#89CFF0
 set background=dark
-colorscheme onedark
+colorscheme one-dark
 
 "Buffers
 nmap <silent> <tab> :bn<CR>
@@ -71,7 +71,7 @@ nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
 autocmd BufReadPost quickfix nnoremap <silent><buffer> q :q<CR>
 
 nmap <leader>c  <Plug>(coc-codeaction-cursor)
-nmap <leader>s  <Plug>
+nmap <leader>s  <Plug>(coc-list-symbols)
 
 autocmd User CocNvimInit xmap if <Plug>(coc-funcobj-i)
 autocmd User CocNvimInit omap if <Plug>(coc-funcobj-i)
@@ -108,11 +108,22 @@ endfunction
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_tabs = 0
 
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
 " Nerdtree
 
 nmap <Leader>fe :NERDTreeFind<cr>R
 nmap <Leader>e :NERDTreeFocus<cr>R
-let g:airline#extensions#tabline#buffer_nr_show = 1
 
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -154,8 +165,6 @@ endfunction
 autocmd! User GoyoEnter nested call <SID>goyo_enter()
 autocmd! User GoyoLeave nested call <SID>goyo_leave()
 
-" Airlien
-let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 " Vimspector
 let g:vimspector_enable_mappings = 'HUMAN'

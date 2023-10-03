@@ -26,6 +26,7 @@ set hidden
 
 set ignorecase
 set smartcase
+set hlsearch
 
 set mouse=a
 set encoding=UTF-8
