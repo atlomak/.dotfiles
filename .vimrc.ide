@@ -182,7 +182,7 @@ if has('nvim-0.4.0') || has('patch-8.2.0750')
     vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
 endif
 
-command! -nargs=0 Format :call CocActionAsync('format')
+command! -nargs=0 FormatCoc :call CocActionAsync('format')
 
 inoremap <silent><expr> <TAB>
             \ coc#pum#visible() ? coc#pum#next(1) :
