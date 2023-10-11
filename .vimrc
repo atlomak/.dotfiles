@@ -37,6 +37,8 @@ set tabpagemax=50
 
 set pumheight=10
 
+set dir=~/.vim//
+
 "Func by xolox/stackoverflow
 "Replace word under selected region
 vnoremap <leader>r :call Get_visual_selection()<cr>
