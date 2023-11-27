@@ -14,7 +14,6 @@ set incsearch
 set backspace=indent,eol,start
 set complete-=i
 
-set relativenumber
 set number
 
 set expandtab
@@ -38,6 +37,13 @@ set tabpagemax=50
 set pumheight=10
 
 set dir=~/.vim//
+
+
+let term_number = 1
+
+" Dont list terminal buffers
+autocmd TerminalWinOpen * execute 'file ' . 'term' . term_number | let term_number += 1 | setlocal nobuflisted
+autocmd ColorScheme * hi Terminal ctermbg=black ctermfg=white guibg=black guifg=white
 
 "Replace word under selected region
 "Func by xolox/stackoverflow
@@ -118,6 +124,8 @@ Plug 'rafi/awesome-vim-colorschemes'
 Plug 'google/vim-maktaba'
 Plug 'google/vim-glaive'
 Plug 'google/vim-codefmt'
+Plug 'github/copilot.vim'
+Plug 'editorconfig/editorconfig-vim'
 call plug#end()
 
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
@@ -178,6 +186,10 @@ if has('nvim-0.4.0') || has('patch-8.2.0750')
     vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
     vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
 endif
+
+"copilot
+let g:copilot_no_tab_map = v:true
+imap <silent><script><expr> <C-e> coc#pum#visible() ? coc#pum#cancel() : copilot#Accept("\<C-e>")
 
 command! -nargs=0 FormatCoc :call CocActionAsync('format')
 
