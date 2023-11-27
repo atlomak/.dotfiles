@@ -39,13 +39,32 @@ set pumheight=10
 set dir=~/.vim//
 
 
-let term_number = 1
+"TERMINAL
 
-" Dont list terminal buffers
-autocmd TerminalWinOpen * execute 'file ' . 'term' . term_number | let term_number += 1 | setlocal nobuflisted
-autocmd ColorScheme * hi Terminal ctermbg=black ctermfg=white guibg=black guifg=white
+function ChangeTerminalColors()
+    let g:terminal_ansi_colors = [
+                \'#282828', '#CC241D', '#98971A', '#D79921',
+                \'#458588', '#B16286', '#689D6A', '#D65D0E',
+                \'#fb4934', '#b8bb26', '#fabd2f', '#83a598',
+                \'#d3869b', '#8ec07c', '#fe8019', '#FBF1C7' ]
 
-"Replace word under selected region
+    highlight Terminal guibg='#282828'
+    highlight Terminal guifg='#ebdbb2'
+endfunction
+
+let g:term_number=1
+
+function RenameTerminal()
+    if bufname() =~ "\/bin\/bash"
+       execute "keepalt file term" . g:term_number 
+       let g:term_number=g:term_number+1
+    endif
+endfunction
+
+autocmd TerminalWinOpen * setlocal nobuflisted | :call RenameTerminal()
+autocmd ColorScheme * :call ChangeTerminalColors()
+
+"REPLACE WORDS
 "Func by xolox/stackoverflow
 vnoremap <leader>r :call Get_visual_selection()<cr>
 
@@ -60,7 +79,7 @@ function! Get_visual_selection()
     execute ":%s/".selection."/".change."/gc"
 endfunction
 
-" Set 1 to transparent background
+"TRANSPARENT BACKGROUND
 let g:transparent=0
 
 function! ToggleTransparent()
@@ -75,7 +94,7 @@ endfunction
 
 command Transparent :call ToggleTransparent()
 
-" TRUECOLORS
+"TRUECOLORS
 if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
     if (has("nvim"))
         let $NVIM_TUI_ENABLE_TRUE_COLOR=1
@@ -92,6 +111,7 @@ endif
 xnoremap P Pgvy
 nmap <silent> <tab> :bn<CR>
 nmap <silent> <s-tab> :bp<CR>
+nmap <silent> <leader>x :term ++curwin<CR>
 
 
 "********************************PLUGINS********************************
