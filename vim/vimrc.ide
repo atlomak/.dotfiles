@@ -141,17 +141,15 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'rafi/awesome-vim-colorschemes'
-Plug 'google/vim-maktaba'
-Plug 'google/vim-glaive'
-Plug 'google/vim-codefmt'
 Plug 'github/copilot.vim'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'frazrepo/vim-rainbow'
 call plug#end()
 
 autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
 autocmd ColorScheme * hi CocInfoLine ctermfg=Blue guifg=#89CFF0
 set background=dark
-colorscheme one-dark
+colorscheme gruvbox
 
 "Buffers
 nnoremap <Leader>q :Bdelete<CR>

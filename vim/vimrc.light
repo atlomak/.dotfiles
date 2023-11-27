@@ -112,9 +112,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'rafi/awesome-vim-colorschemes'
-Plug 'google/vim-maktaba'
-Plug 'google/vim-glaive'
-Plug 'google/vim-codefmt'
+Plug 'frazrepo/vim-rainbow'
 call plug#end()
 
 
