@@ -1,0 +1,299 @@
+set nocompatible
+
+nnoremap <SPACE> <Nop>
+let mapleader = " "
+
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+
+set ttimeout
+set ttimeoutlen=1
+set ttyfast
+
+set incsearch
+set backspace=indent,eol,start
+set complete-=i
+
+set number
+
+set expandtab
+set tabstop=4
+set sw=4
+
+set signcolumn=yes
+
+set hidden
+
+set ignorecase
+set smartcase
+set hlsearch
+
+set mouse=a
+set encoding=UTF-8
+
+set wildmenu
+
+set tabpagemax=50
+set pumheight=10
+
+set dir=~/.vim//
+
+
+"TERMINAL
+
+function ChangeTerminalColors()
+    let g:terminal_ansi_colors = [
+                \'#282828', '#CC241D', '#98971A', '#D79921',
+                \'#458588', '#B16286', '#689D6A', '#D65D0E',
+                \'#fb4934', '#b8bb26', '#fabd2f', '#83a598',
+                \'#d3869b', '#8ec07c', '#fe8019', '#FBF1C7' ]
+
+    highlight Terminal guibg='#282828'
+    highlight Terminal guifg='#ebdbb2'
+endfunction
+
+let g:term_number=1
+
+function RenameTerminal()
+    if bufname() =~ "\/bin\/bash"
+       execute "keepalt file term" . g:term_number 
+       let g:term_number=g:term_number+1
+    endif
+endfunction
+
+autocmd TerminalWinOpen * setlocal nobuflisted | :call RenameTerminal()
+autocmd ColorScheme * :call ChangeTerminalColors()
+
+"REPLACE WORDS
+"Func by xolox/stackoverflow
+vnoremap <leader>r :call Get_visual_selection()<cr>
+
+function! Get_visual_selection()
+    let [lnum1, col1] = getpos("'<")[1:2]
+    let [lnum2, col2] = getpos("'>")[1:2]
+    let lines = getline(lnum1, lnum2)
+    let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][col1 - 1:]
+    let selection = join(lines,'\n')
+    let change = input('Change the selection with: ')
+    execute ":%s/".selection."/".change."/gc"
+endfunction
+
+"TRANSPARENT BACKGROUND
+let g:transparent=0
+
+function! ToggleTransparent()
+    if g:transparent==0
+        hi Normal guibg=NONE
+        let g:transparent=1
+    else
+        execute("colorscheme " . g:colors_name)
+        let g:transparent = 0
+    endif
+endfunction
+
+command Transparent :call ToggleTransparent()
+
+"TRUECOLORS
+if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
+    if (has("nvim"))
+        let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+    endif
+    if (has("termguicolors"))
+        set termguicolors
+        if g:transparent == 1
+            hi Normal guibg=NONE
+        endif
+    endif
+endif
+
+"VANILLA KEYBINDS
+xnoremap P Pgvy
+nmap <silent> <tab> :bn<CR>
+nmap <silent> <s-tab> :bp<CR>
+nmap <silent> <leader>x :term ++curwin<CR>
+
+
+"********************************PLUGINS********************************
+"
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin()
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-vinegar'
+Plug 'tpope/vim-endwise'
+Plug 'airblade/vim-gitgutter'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'vim-airline/vim-airline'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-test/vim-test'
+Plug 'Yggdroot/indentLine'
+Plug 'hashivim/vim-terraform'
+Plug 'moll/vim-bbye'
+Plug 'puremourning/vimspector'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/goyo.vim'
+Plug 'rafi/awesome-vim-colorschemes'
+Plug 'google/vim-maktaba'
+Plug 'google/vim-glaive'
+Plug 'google/vim-codefmt'
+Plug 'github/copilot.vim'
+Plug 'editorconfig/editorconfig-vim'
+call plug#end()
+
+autocmd ColorScheme * hi CocUnusedHighlight ctermfg=Yellow guifg=#fab005
+autocmd ColorScheme * hi CocInfoLine ctermfg=Blue guifg=#89CFF0
+set background=dark
+colorscheme one-dark
+
+"Buffers
+nnoremap <Leader>q :Bdelete<CR>
+
+"COC config
+let g:coc_disable_startup_warning=1
+let g:coc_start_at_startup = 0
+
+
+function! ShowDocumentation()
+    if CocAction('hasProvider', 'hover')
+        call CocActionAsync('doHover')
+    else
+        call feedkeys('K', 'in')
+    endif
+endfunction
+
+inoremap <silent><expr> <CR> pumvisible() ? coc#_select_confirm() :"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>\<c-r>=EndwiseDiscretionary()\<CR>"
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gd <Plug>(coc-definition)
+autocmd User CocNvimInit nmap <silent> gy <Plug>(coc-type-definition)
+autocmd User CocNvimInit nmap <silent> gi <Plug>(coc-implementation)
+autocmd User CocNvimInit nmap <silent> gr <Plug>(coc-references)
+autocmd User CocNvimInit nnoremap <silent> K :call ShowDocumentation()<CR>
+
+autocmd User CocNvimInit xmap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit omap if <Plug>(coc-funcobj-i)
+autocmd User CocNvimInit xmap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit omap af <Plug>(coc-funcobj-a)
+autocmd User CocNvimInit xmap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit omap ic <Plug>(coc-classobj-i)
+autocmd User CocNvimInit xmap ac <Plug>(coc-classobj-a)
+autocmd User CocNvimInit omap ac <Plug>(coc-classobj-a)
+
+nmap <silent> <leader>rn <Plug>(coc-rename)
+nmap <silent> <leader>D :<C-u>CocList diagnostics<cr>
+nmap <silent><nowait> <space>d  :CocDiagnostics<cr>
+nmap <leader>c  <Plug>(coc-codeaction-cursor)
+nmap <leader>s  <Plug>(coc-list-symbols)
+
+autocmd BufReadPost quickfix nnoremap <silent><buffer> q :q<CR>
+
+
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+    nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+    vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+"copilot
+let g:copilot_no_tab_map = v:true
+imap <silent><script><expr> <C-e> coc#pum#visible() ? coc#pum#cancel() : copilot#Accept("\<C-e>")
+
+command! -nargs=0 FormatCoc :call CocActionAsync('format')
+
+inoremap <silent><expr> <TAB>
+            \ coc#pum#visible() ? coc#pum#next(1) :
+            \ CheckBackspace() ? "\<Tab>" :
+            \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+function! CheckBackspace() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+"Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_tabs = 0
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+
+
+" Nerdtree
+
+nmap <Leader>fe :NERDTreeFind<cr>R
+nmap <Leader>e :NERDTreeFocus<cr>R
+
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+" autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+"Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+            \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+
+"Vimtest
+nmap <silent> <leader>ts :TestSuite<CR>
+nmap <silent> <leader>T :TestFile<CR>
+nmap <silent> <leader>tt :TestNearest<CR>
+
+"IndentLine guides
+let g:indentLine_enabled = 1
+
+
+"GoYo
+let g:goyo_width = 120
+function! s:goyo_enter()
+    :NERDTreeClose
+    set noshowmode
+    set scrolloff=10
+endfunction
+
+function! s:goyo_leave()
+    if g:transparent == 1
+        hi Normal guibg=NONE
+    endif
+    set showmode
+    set showcmd
+    set scrolloff=5
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+
+" Vimspector
+let g:vimspector_enable_mappings = 'HUMAN'
+nmap <F1> :CocCommand java.debug.vimspector.start<CR>
+
+
+" Fzf
+nmap <silent> <leader>fd :RG<cr>
+nmap <silent> <leader>fg :GFiles<cr>
+nmap <silent> <leader>ff :Files<cr>
+nmap <silent> <leader>fb :Buffers<cr>
+nmap <silent> <leader><leader> :BLines<cr>
